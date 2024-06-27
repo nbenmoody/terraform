@@ -40,7 +40,7 @@ resource "aws_vpc" "main" {
 
 resource "aws_internet_gateway" "main_internet_gateway" {
   vpc_id = aws_vpc.main.id
-  depends_on = ["aws_vpc.main"]
+  depends_on = [aws_vpc.main]
 }
 
 resource "aws_subnet" "main_public_1" {
@@ -51,7 +51,7 @@ resource "aws_subnet" "main_public_1" {
   tags = {
     Name = "main-public-1"
   }
-  depends_on = ["aws_internet_gateway.main_internet_gateway"]
+  depends_on = [aws_internet_gateway.main_internet_gateway]
 }
 
 resource "aws_subnet" "main_public_2" {
@@ -62,7 +62,7 @@ resource "aws_subnet" "main_public_2" {
   tags = {
     Name = "main-public-2"
   }
-  depends_on = ["aws_internet_gateway.main_internet_gateway"]
+  depends_on = [aws_internet_gateway.main_internet_gateway]
 }
 
 resource "aws_subnet" "main_public_3" {
@@ -73,12 +73,12 @@ resource "aws_subnet" "main_public_3" {
   tags = {
     Name = "main-public-3"
   }
-  depends_on = ["aws_internet_gateway.main_internet_gateway"]
+  depends_on = [aws_internet_gateway.main_internet_gateway]
 }
 
 resource "aws_key_pair" "cluster_node_key" {
   key_name = "cluster-node-key"
-  public_key = file(cluster_node_public_key)
+  public_key = file("${path.module}/cluster_node_public_key")
 }
 
 resource "aws_instance" "cluster_node_1" {
@@ -91,7 +91,7 @@ resource "aws_instance" "cluster_node_1" {
   tags = {
     Name = "cluster-node-1"
   }
-  depends_on = ["aws_subnet.main_public_1", "aws_key_pair.cluster_node_key"]
+  depends_on = [aws_subnet.main_public_1, aws_key_pair.cluster_node_key]
 }
 
 resource "aws_instance" "cluster_node_2" {
@@ -104,7 +104,7 @@ resource "aws_instance" "cluster_node_2" {
   tags = {
     Name = "cluster-node-2"
   }
-  depends_on = ["aws_subnet.main_public_2", "aws_key_pair.cluster_node_key"]
+  depends_on = [aws_subnet.main_public_2, aws_key_pair.cluster_node_key]
 }
 
 resource "aws_instance" "cluster_node_3" {
@@ -117,5 +117,5 @@ resource "aws_instance" "cluster_node_3" {
   tags = {
     Name = "cluster-node-3"
   }
-  depends_on = ["aws_subnet.main_public_3", "aws_key_pair.cluster_node_key"]
+  depends_on = [aws_subnet.main_public_3, aws_key_pair.cluster_node_key]
 }
