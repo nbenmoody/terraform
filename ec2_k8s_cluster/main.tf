@@ -76,6 +76,63 @@ resource "aws_subnet" "main_public_3" {
   depends_on = [aws_internet_gateway.main_internet_gateway]
 }
 
+resource "aws_route_table" "main_route_table" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main_internet_gateway.id
+  }
+
+  tags = {
+    Name = "main-route-table"
+  }
+}
+
+resource "aws_route_table_association" "main_public_1" {
+  subnet_id      = aws_subnet.main_public_1.id
+  route_table_id = aws_route_table.main_route_table.id
+}
+
+resource "aws_route_table_association" "main_public_2" {
+  subnet_id      = aws_subnet.main_public_2.id
+  route_table_id = aws_route_table.main_route_table.id
+}
+
+resource "aws_route_table_association" "main_public_3" {
+  subnet_id      = aws_subnet.main_public_3.id
+  route_table_id = aws_route_table.main_route_table.id
+}
+
+resource "aws_security_group" "cluster_security_group" {
+  vpc_id = aws_vpc.main.id
+
+  ingress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    self = true
+  }
+
+  ingress {
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  tags = {
+    Name = "cluster-security-group"
+  }
+}
+
 resource "aws_key_pair" "cluster_node_key" {
   key_name   = "cluster-node-key"
   public_key = file("${path.module}/cluster_node_public_key")
@@ -111,5 +168,6 @@ resource "aws_instance" "cluster_nodes" {
   associate_public_ip_address = true
   subnet_id                   = each.value.subnet_id
   key_name                    = aws_key_pair.cluster_node_key.key_name
+  security_groups             = [aws_security_group.cluster_security_group.id]
   tags                        = each.value.tags
 }
