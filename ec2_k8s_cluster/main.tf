@@ -111,23 +111,23 @@ resource "aws_security_group" "cluster_security_group" {
     from_port = 0
     to_port   = 0
     protocol  = "-1"
-    self = true
+    self      = true
   }
 
   ingress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
   tags = {
     Name = "cluster-security-group"
   }
@@ -170,4 +170,16 @@ resource "aws_instance" "cluster_nodes" {
   key_name                    = aws_key_pair.cluster_node_key.key_name
   security_groups             = [aws_security_group.cluster_security_group.id]
   tags                        = each.value.tags
+}
+
+resource "aws_instance" "admin_node" {
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = "t2.micro"
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.main_public_1.id
+  key_name                    = aws_key_pair.cluster_node_key.key_name
+  security_groups             = [aws_security_group.cluster_security_group.id]
+  tags = {
+    Name = "admin-node"
+  }
 }
