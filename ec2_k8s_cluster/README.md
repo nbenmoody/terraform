@@ -29,6 +29,11 @@ This process for creation will also just use your local machine as the "backend"
 this Configuration will end up sitting in this module when you use it. Another strike against production. If you catch my drift: just don't
 use this for production. Use it for practice.
 
+1. Replace the public key in the `cluster_node_public_key` file with your own.
+2. `terraform init`
+3. `terraofmr apply`
+4. You should be able to shell into each EC2 now. 
+
 ### Kubernetes Configuration
 [Reference](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
 

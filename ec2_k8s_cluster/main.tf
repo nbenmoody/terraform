@@ -5,6 +5,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "5.55.0"
     }
+    ansible = {
+      source = "ansible/ansible"
+      version = "1.3.0"
+    }
   }
 }
 
@@ -12,7 +16,10 @@ provider "aws" {
   region = "us-east-2"
 }
 
+provider "ansible" {
+}
 
+# --------- AWS --------------
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -182,4 +189,43 @@ resource "aws_instance" "admin_node" {
   tags = {
     Name = "admin-node"
   }
+}
+
+# --------- Ansible --------------
+
+## Cluster Nodes
+resource "ansible_group" "cluster_nodes" {
+  name     = "cluster-nodes"
+}
+
+resource "ansible_host" "cluster_nodes" {
+  for_each = aws_instance.cluster_nodes
+  name   = each.value.public_ip
+  groups = [ansible_group.cluster_nodes.name]
+}
+
+resource "ansible_playbook" "cluster_node_playbook" {
+  for_each = aws_instance.cluster_nodes
+  playbook   = "ansible/cluster-node.yml"
+  name       = "cluster-node-configuration"
+  groups     = [ansible_group.cluster_nodes.name]
+  replayable = true
+}
+
+## Admin Node
+resource "ansible_group" "admin_nodes" {
+  name     = "cluster-nodes"
+}
+
+resource "ansible_host" "admin_node" {
+  for_each = aws_instance.cluster_nodes
+  name   = each.value.public_ip
+  groups = [ansible_group.admin_nodes.name]
+}
+
+resource "ansible_playbook" "admin_node_playbook" {
+  playbook   = "ansible/admin-node.yml"
+  name       = "admin-node-configuration"
+  groups     = [ansible_group.admin_nodes.name]
+  replayable = true
 }
