@@ -14,16 +14,6 @@
         name: curl,vim,apt-transport-https,ca-certificates,gpg
         autoremove: true
     
-    # https://kubernetes.io/docs/tasks/tools/
-    - name: Download kubectl binary
-      ansible.builtin.shell: curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
-    
-    - name: Install kubectl
-      ansible.builtin.shell: sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-    
-    - name: Validate kubectl install
-      ansible.builtin.shell: kubectl version --client
-    
     - name: Allow all access to tcp port 6443
       community.general.ufw:
         rule: allow
