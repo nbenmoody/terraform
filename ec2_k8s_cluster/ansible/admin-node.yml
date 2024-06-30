@@ -30,11 +30,15 @@
         port: '6443'
         proto: tcp
     
+    # Following these docs: https://github.com/containerd/containerd/blob/main/docs/getting-started.md
     - name: Download containerd archive
       ansible.builtin.shell: curl -O https://github.com/containerd/containerd/archive/refs/tags/api/v1.7.19.tar.gz
     
     - name: Extract the archive to the expected directory
-      ansible.builtin.shell: tar Cxzvf /usr/local containerd-1.6.2-linux-amd64.tar.gz
+      ansible.builtin.shell: tar Cxzvf /usr/local v1.7.19.tar.gz
+    
+    - name: Download the containerd.service file
+      ansible.builtin.shell: curl -o /usr/local/lib/systemd/system/containerd.service https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
       
     - name: Start the containerd service with systemd
       ansible.builtin.systemd_service:
@@ -42,6 +46,18 @@
         daemon_reload: true
         state: started
         enabled: true
+    
+    - name: Download the runc binary
+      ansible.builtin.shell: curl -O https://github.com/opencontainers/runc/releases/download/v1.1.13/runc.amd64
+    
+    - name: Install runc
+      ansible.builtin.shell: install -m 755 runc.amd64 /usr/local/sbin/runc
+    
+    - name: Download the CNI plugin archive
+      ansible.builtin.shell: curl -O https://github.com/containernetworking/plugins/releases/download/v1.5.1/cni-plugins-linux-amd64-v1.5.1.tgz
+    
+    - name: Extract the archive to the expected directory
+      ansible.builtin.shell: mkdir -p /opt/cni/bin && tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.5.1.tgz
     
     # I left off here: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#check-required-ports
 
