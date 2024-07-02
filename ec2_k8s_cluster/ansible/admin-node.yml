@@ -1,7 +1,8 @@
 ---
 - name: Prep Admin Node
   remote_user: root
-  hosts: {{ hosts }}
+  hosts: admin
+  become: true
 
   tasks:
     - name: Update packages
