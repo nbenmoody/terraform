@@ -195,7 +195,7 @@ resource "aws_instance" "admin_node" {
 
 ## Cluster Nodes
 resource "ansible_group" "cluster_nodes" {
-  name     = "cluster-nodes"
+  name     = "clusterNodes"
 }
 
 resource "ansible_host" "cluster_nodes" {
@@ -214,7 +214,7 @@ resource "ansible_playbook" "cluster_node_playbook" {
 
 ## Admin Node
 resource "ansible_group" "admin_nodes" {
-  name     = "cluster-nodes"
+  name     = "adminNodes"
 }
 
 resource "ansible_host" "admin_node" {

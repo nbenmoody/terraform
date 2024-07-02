@@ -1,6 +1,7 @@
 ---
 - name: Update Cluster Nodes
   remote_user: root
+  hosts: all
 
   tasks:
     - name: Update packages
