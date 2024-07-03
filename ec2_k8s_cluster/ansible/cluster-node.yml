@@ -1,6 +1,8 @@
 ---
 - name: Update Cluster Nodes
   hosts: cluster
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
   become: true
 
   tasks:
@@ -8,4 +10,9 @@
       apt:
         update_cache: true
         upgrade: full
+        autoremove: true
+    
+    - name: Install utilities
+      apt:
+        name: vim,curl
         autoremove: true
